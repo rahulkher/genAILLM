@@ -29,7 +29,7 @@ The Generative AI Powered Search project is a web application designed to provid
 
 ### Installation
 1. Clone the repository:
-    \```
+    \```sh
     git clone <https://github.com/rahulkher/genAILLM>
     \```
 2. Navigate to the project directory:
