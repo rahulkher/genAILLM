@@ -12,6 +12,7 @@ import os, time
 import webbrowser
 import random
 from data import split_documents, add_to_db, get_embedding_function, delete_from_db
+from style import style_chat_area, style_sidebar_area, get_base64_of_img, img_to_html
 import base64
 from pathlib import Path
 import pickle
@@ -22,13 +23,10 @@ BASE_PATH = Path(__file__).parent
 # Define the path where the documents will be stored
 DATA_PATH = os.path.join(BASE_PATH, 'docs')
 CHROMA_DIR = os.path.join(BASE_PATH, 'db')
-LOGO_PATH = os.path.join(BASE_PATH, 'images\images.png')
+LOGO_PATH = os.path.join(BASE_PATH, 'images', 'images.png')
 SAVED_PATH = os.path.join(BASE_PATH, 'saved_chats')
-# Define the path where the Chroma database will be stored
-# CHROMA_DIR = "D:/genAILLM/db"
-# LOGO_PATH = "D:\genAILLM\images\images.png"
-# SAVED_PATH = "D:/genAILLM/saved_chats/"
-
+CHAT_BG_PATH = os.path.join(BASE_PATH, 'images', 'chat-bg1.jpg')   # Use this for main chat screen
+SIDEBAR_BG_PATH = os.path.join(BASE_PATH, 'images', 'bg.jpg')  # Use this for the side bar
 
 # Create the directory for uploading documents if it doesn't exist
 if not os.path.exists(DATA_PATH):
@@ -41,8 +39,6 @@ db = Chroma(
     persist_directory=CHROMA_DIR,
     embedding_function=get_embedding_function()
 )
-
-
 
 # Template for creating the prompt that the AI will use to generate a response
 PROMPT_TEMPLATE_RESPONSE = """
@@ -134,15 +130,6 @@ def display_pdf(file_path):
     """
         st.markdown(pdf_display, unsafe_allow_html=True)
 
-def img_to_bytes(img_path):
-    img_bytes = Path(img_path).read_bytes()
-    encoded = base64.b64encode(img_bytes).decode()
-    return encoded
-
-
-def img_to_html(img_path):
-    img_html = "<div style='display: flex; justify-content: center; align-items: center; height: 20vh; border: 1px solid white; background-color: white; margin-bottom: 10px; border-radius: 50%'><img src='data:image/png;base64,{}'alt='Centered Image' style='max-width: 80%; max-height: 80%;'></div>".format(img_to_bytes(img_path))
-    return img_html
 
 def refresh_page(count:int=1):
     count = count
@@ -156,38 +143,9 @@ if "chat_history" not in st.session_state:
 
 # Set the page config
 st.set_page_config(page_title="CHAT APP", layout="wide")
-@st.cache_data
-def get_base64_of_img(image):
-    with open(image, 'rb') as f:
-        data = f.read()
-    return base64.b64encode(data).decode()
-
-img_bg = get_base64_of_img("images/chat-bg1.jpg")
-img_side = get_base64_of_img("images/bg.jpg")
-
-page_bg_image=f"""
-<style>
-[data-testid="stApp"] {{
-    background-image: url("data:image/png;base64,{img_bg}");
-    background-size: stretch;
-}}
-
-[data-testid="stHeader"] {{
-    background-color: rgba(0, 0, 0, 0);
-}}
-
-[data-testid="stToolbar"] {{
-    color: rgba(0, 0, 0, 0);
-}}
-
-[data-testid="stSidebar"] {{
-    background-image: url("data:image/png;base64,{img_side}");
-}}
-</style>
-"""
-st.markdown(page_bg_image, unsafe_allow_html=True)
 
 with st.sidebar:
+    style_sidebar_area(SIDEBAR_BG_PATH)
     tab = option_menu(
     menu_title="",
     # menu_icon='chat-text-fill',
@@ -223,7 +181,7 @@ with st.sidebar:
             if not os.path.exists(SAVED_PATH):
                 os.mkdir(SAVED_PATH)
 
-            with open(SAVED_PATH + filename, 'wb') as file:
+            with open(os.path.join(SAVED_PATH, filename), 'wb') as file:
                 pickle.dump(st.session_state.chat_history, file)
             st.toast(body=f"Chat saved as {filename}")
         except Exception as e:
@@ -263,21 +221,14 @@ with st.sidebar:
     
 # Tab1: Chat Space
 if tab == "Chat":
+    style_chat_area(SIDEBAR_BG_PATH)
     # Set the title of the Streamlit app
-    st.markdown("<h1 style='text-align: center;'><span style='font-size: 80px; color: red'>AI</span><span style='text-align: center; color: black'>Powered Search 🦉📄</span></h1>", unsafe_allow_html=True)
+    st.markdown("<h1 style='text-align: center;'><span style='font-size: 80px; color: red'>AI</span><span style='text-align: center; color: white'>Powered Search 🦉📄</span></h1>", unsafe_allow_html=True)
     # Add a caption and markdown description about the app
-    st.markdown("<p style='text-align: center;'><span style='text-align: center; color: black;'>This is a Generative AI powered Question and Answer app that responds to questions about your PDF files.</span></p>", unsafe_allow_html=True)
+    st.markdown("<p style='text-align: center;'><span style='text-align: center; color: white;'>This is a Generative AI powered Question and Answer app that responds to questions about your PDF files.</span></p>", unsafe_allow_html=True)
     
     # Input widget for the user to ask questions
     prompt = st.chat_input("Your question here...")
-    st.markdown("""
-    <style> 
-    .stBottom {
-    background-color: white;
-    }
-    </style>
-    """, unsafe_allow_html=True)
-   
     if prompt:
         # Refine User Query
         refined_query, _ = query_rag(prompt, chat_history=st.session_state.chat_history, input_prompt_template=PROMPT_TEMPLATE_QUERY)
@@ -295,7 +246,8 @@ if tab == "Chat":
         
         for chat in st.session_state.chat_history:
             st.chat_message("user").markdown(chat['user'])
-            st.info(f"Refined Query:  {chat['user_refined']}")
+            with st.expander("Refined Query", expanded=False):
+                st.info(f"{chat['user_refined']}")
             st.chat_message("assistant").markdown(chat['response'])
             key = chat['key']
             labels = {}       
@@ -311,15 +263,13 @@ if tab == "Chat":
                 label = document.split(":")[-1].split("/")[-1]+", Page No: "+ page
                 labels[label]= path
                 
-            
-            # st.write([(labels[label], label) for label in labels.keys()])
             colList = st.columns(3, gap='medium', vertical_alignment="center")
-
+            
             for i, label in enumerate(labels.keys()):
                 with colList[i%3]: 
                     path = str(labels[label])
                     mention(label=label, url=path)
-                           
+                            
 
                     
 # Tab2: Admin Panel
@@ -361,11 +311,7 @@ elif tab == "Admin":
                 default_index=0,
                 # orientation='horizontal'
             )
-            # selected_doc = st.multiselect(
-            #     label='',
-            #     options=[doc.split('/')[-1] for doc in set(sources)],
-            #     placeholder="Select the Documents to be removed from Database",
-            # )
+            
             # Check if user is still authenticated
             if 'name' in st.session_state and 'authentication_status' in st.session_state:
                 if st.session_state['authentication_status']:
@@ -399,7 +345,7 @@ elif tab == "Admin":
 
             if selected_doc:
                 st.write("### PDF Preview")
-                display_pdf(DATA_PATH + selected_doc)
+                display_pdf(os.path.join(DATA_PATH, selected_doc))
             if uploaded_files:
                 # st.session_state.show_logout = False
                 for uploaded_file in uploaded_files:
