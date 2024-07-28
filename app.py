@@ -152,7 +152,36 @@ if "chat_history" not in st.session_state:
 
 # Set the page config
 st.set_page_config(page_title="CHAT APP", layout="wide")
+@st.cache_data
+def get_base64_of_img(image):
+    with open(image, 'rb') as f:
+        data = f.read()
+    return base64.b64encode(data).decode()
 
+img_bg = get_base64_of_img("images/chat-bg1.jpg")
+img_side = get_base64_of_img("images/bg.jpg")
+
+page_bg_image=f"""
+<style>
+[data-testid="stApp"] {{
+    background-image: url("data:image/png;base64,{img_bg}");
+    background-size: stretch;
+}}
+
+[data-testid="stHeader"] {{
+    background-color: rgba(0, 0, 0, 0);
+}}
+
+[data-testid="stToolbar"] {{
+    color: rgba(0, 0, 0, 0);
+}}
+
+[data-testid="stSidebar"] {{
+    background-image: url("data:image/png;base64,{img_side}");
+}}
+</style>
+"""
+st.markdown(page_bg_image, unsafe_allow_html=True)
 
 with st.sidebar:
     tab = option_menu(
@@ -231,12 +260,20 @@ with st.sidebar:
 # Tab1: Chat Space
 if tab == "Chat":
     # Set the title of the Streamlit app
-    st.markdown("<h1 style='text-align: center;'><span style='font-size: 80px; color: red'>AI</span><span style='text-align: center;'>Powered Search 🦉📄</span></h1>", unsafe_allow_html=True)
+    st.markdown("<h1 style='text-align: center;'><span style='font-size: 80px; color: red'>AI</span><span style='text-align: center; color: black'>Powered Search 🦉📄</span></h1>", unsafe_allow_html=True)
     # Add a caption and markdown description about the app
-    st.markdown("<p style='text-align: center;'><span style='text-align: center;'>This is a Generative AI powered Question and Answer app that responds to questions about your PDF files.</span></p>", unsafe_allow_html=True)
+    st.markdown("<p style='text-align: center;'><span style='text-align: center; color: black;'>This is a Generative AI powered Question and Answer app that responds to questions about your PDF files.</span></p>", unsafe_allow_html=True)
     
     # Input widget for the user to ask questions
     prompt = st.chat_input("Your question here...")
+    st.markdown("""
+    <style> 
+    .stBottom {
+    background-color: white;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+   
     if prompt:
         # Refine User Query
         refined_query, _ = query_rag(prompt, chat_history=st.session_state.chat_history, input_prompt_template=PROMPT_TEMPLATE_QUERY)
