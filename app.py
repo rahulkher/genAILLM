@@ -18,12 +18,16 @@ import pickle
 from datetime import datetime
 
 port = 5000
+BASE_PATH = Path(__file__.parent)
 # Define the path where the documents will be stored
-DATA_PATH = "D:/genAILLM/docs/"
+DATA_PATH = os.path.join(BASE_PATH, 'docs')
+CHROMA_DIR = os.path.join(BASE_PATH, 'db')
+LOGO_PATH = os.path.join(BASE_PATH, 'images\images.png')
+SAVED_PATH = os.path.join(BASE_PATH, 'saved_chats')
 # Define the path where the Chroma database will be stored
-CHROMA_DIR = "D:/genAILLM/db"
-LOGO_PATH = "D:\genAILLM\images\images.png"
-SAVED_PATH = "D:/genAILLM/saved_chats/"
+# CHROMA_DIR = "D:/genAILLM/db"
+# LOGO_PATH = "D:\genAILLM\images\images.png"
+# SAVED_PATH = "D:/genAILLM/saved_chats/"
 
 
 # Create the directory for uploading documents if it doesn't exist

@@ -8,11 +8,12 @@ from langchain_community.embeddings import SentenceTransformerEmbeddings  # Impo
 from langchain_community.embeddings.ollama import OllamaEmbeddings  # Import Ollama embeddings
 from langchain.chains import RetrievalQA  # Import RetrievalQA for question answering
 import os  # Import os for operating system functionalities
+from app import DATA_PATH, CHROMA_DIR
 
 
-# Define paths for data storage
-DATA_PATH = "D:/genAILLM/docs/"
-CHROMA_DIR = "D:/genAILLM/db"
+# # Define paths for data storage
+# DATA_PATH = "D:/genAILLM/docs/"
+# CHROMA_DIR = "D:/genAILLM/db"
 
 # Define the directory for storing the vector database
 persist_directory = 'db'
