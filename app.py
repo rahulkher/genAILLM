@@ -18,7 +18,7 @@ import pickle
 from datetime import datetime
 
 port = 5000
-BASE_PATH = Path(__file__.parent)
+BASE_PATH = Path(__file__).parent
 # Define the path where the documents will be stored
 DATA_PATH = os.path.join(BASE_PATH, 'docs')
 CHROMA_DIR = os.path.join(BASE_PATH, 'db')
