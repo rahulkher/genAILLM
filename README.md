@@ -11,7 +11,7 @@ The Generative AI Powered Search project is a web application designed to provid
 - **Libraries and Frameworks:** Langchain, Transformers, Streamlit Extras, Streamlit Authenticator, PyPDFLoader
 - **AI Models:** Ollama, SentenceTransformerEmbeddings
 - **Other Tools:** Docker, OpenTelemetry, Kubernetes
-![Image](https://github.com/rahulkher/genAILLM.git/genaillm-pic1.jpg)
+![Image](genaillm-pic1.jpg)
 ## Folder Structure
 \```
 .
