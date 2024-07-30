@@ -29,30 +29,30 @@ Machine-Translation
 
 ### Installation
 1. Clone the repository:
-    \```sh
+    ```sh
     git clone <https://github.com/rahulkher/genAILLM>
-    \```
+    ```
 2. Navigate to the project directory:
-    \```
+    ```sh
     cd <project-directory>
-    \```
+    ```
 3. Install the required packages:
-    \```
+    ```sh
     pip install -r requirements.txt
-    \```
+    ```
 
 ### Configuration
 1. Set up the `.streamlit` directory and config file:
-    \```
+    ```sh
     python config.py
-    \```
+    ```
 2. Replace the placeholder paths and API keys in `app.py` and `data.py` with your actual paths and keys.
 
 ### Execution
 1. Run the Streamlit application:
-    \```
+    ```sh
     streamlit run app.py
-    \```
+    ```
 2. Open your web browser and navigate to the provided URL (usually `http://localhost:8501`).
 
 ## Usage
