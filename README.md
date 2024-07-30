@@ -13,14 +13,14 @@ The Generative AI Powered Search project is a web application designed to provid
 - **Other Tools:** Docker, OpenTelemetry, Kubernetes
 ![Image](genaillm-pic1.jpg)
 ## Folder Structure
-\```
-.
-├── app.py
-├── config.py
-├── data.py
-├── requirements.txt
-└── README.md
-\```
+```
+Machine-Translation
+   ├── app.py
+   ├── config.py
+   ├── data.py
+   ├── requirements.txt
+   └── README.md
+```
 
 ## Installation and Execution
 
